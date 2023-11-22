@@ -1,0 +1,293 @@
+Topic Covered in Lecture
+1) Basic of Heap Tree ( Almost Complete Binary Tree )
+2) Min / Max Heapify
+3) Build Heap Routine
+4) Heap sort
+5) Heap Auxillary Routines -> IncreaseKey, DecreaseKey, InsertElement( Push ) and Extract( Pop )
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+* Complete binary tree - It is tree in which all internal nodes have at least two nodes and
+all leaf node are at same level i.e no internal node is the leaf node, it is also  known as perfect
+binary tree
+
+* Height of the binary tree is defined as maximum number of edges from root node to leaf node 
+
+* Heap Tree - Nearly Complete Binary Tree whose last level is filled from left to right i.e Each node 
+in tree should have at least two nodes except to leaf node present at second last level and last level 
+
+Note : Last level can or cannot be complete but, it should be filled from left to right and leaf nodes
+are allowed only at last and second last level
+
+* Accessing left and right child data from parent index in array 
+To access left child data from parent index - ( 2i + 1 )
+To access right child data from parent index - ( 2i + 2 ) --> 2( i + 1 )
+To access parent data from left or right child index - 
+x = 2i + 1 	--> i = floor( ( x - 1 ) / 2 )
+x = 2( i + 1 )  --> i = ceil( x / 2 )  - 1
+
+* how we can determine whether parent index 'i' does not have left child or right child
+if( ( 2i + 1 ) >= arr.size() && ( 2i + 2 ) >= arr.size() )
+{
+		//Then given index 'i' does not have left child or right child only if the exceed or equal to array size
+}
+
+* Last index to have at least one child i.e last index's parent
+x = arr.size - 1; //find the parent of last index
+i = floor( ( x - 1 ) / 2 ) OR ceil( x / 2 ) - 1
+
+* Max Heap - It is nearly complete binary tree in which parent's value is always greater than or equal to all its childrens recursively
+* Min Heap - It is nearly complete binary tree in which parent's value is always less than or equal to all its childrens recursively
+Organization : Array i.e Non-linear structure and arranged in linear structure and therefore all nodes of heap tree have indices
+from 0 to N - 1
+
+Left( i ) 		= 2i + 1 < N
+Right( i ) 		= 2( i + 1 ) < N
+Parent( i ) 		= ceil( i / 2 ) - 1 OR floor( ( x - 1 )/ 2 )
+Last non-leaf node 	= ceil( ( N - 1 ) / 2 ) - 1
+
+void Max_Heapify( int *p_heap, size_t size, int index )
+{
+	/* Pre-condition : right and left subtree of tree rooted at index 'i' is not max heap */
+	/* Post-condition : Tree rooted at index 'i' is max heap */
+}
+
+* Find kth minimum problem and also suitable for priority queue
+Insertion and deletion takes O( log( n ) ) 
+
+* Using binomial Heap and Fibonacci Heap is also best for priority queue
+
+Algorithm :
+
+Max_Heapify( Arr, i )
+
+	l = left(i)
+	r = right(i)
+	
+	if( l <= Arr.heap_size and Arr[l] > Arr[i] )
+		largest = l
+	else
+		largest = i
+
+	if( r <= Arr.heap_size and Arr[r] > Arr[i] )
+		largest = r
+
+	if( largest != i )
+	{
+		swap( Arr[i], Arr[largest] )
+		Max_Heapify( Arr, largest )
+	}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Heap Representation :
+* Heap is a complete binary tree or almost complete binary tree
+
+* A tree can be represented in the form of an array
+	1) if Parent is at index 'i' then it's left child is at position ( 2i + 1 ) and it's right child
+	is at position ( 2i + 2 ) //Note : index 'i' starts from 0
+
+	2) If child is at index 'i' then it's parent is present at position ( ceil( i / 2 ) - 1 ) and ( floor( ( i - 1) / 2 )
+
+* If heigh = h, then maximum nodes at particular height, h = 2 ^ h and maximum nodes in entire tree, MaxNodes = 2 ^ ( h + 1 ) - 1
+
+Q) What should be the size of an array, if heap is complete binary tree ?
+-> Size of an array depend on number of nodes in heap and  number of nodes in complete binary tree is
+2 ^ ( h + 1 ) - 1 and therefore size of an array is also 2 ^ ( h + 1 ) - 1
+
+Q) How to calculate height of tree from given number of nodes as 'N' ?
+-> Height of tree, h = floor( log(2) N )
+Note : log base will be 2 for binary tree
+
+* In a complete binary tree, 
+	range of leaves = floor( HeapSize/2 ) to ( HeapSize - 1 )
+	range of internal nodes = 0 to floor( HeapSize ) - 1
+
+* If we have elements in descending order in an array then it will be Max-Heap otherwise if element are in increasing order
+then it will be a Min-Heap
+
+Heapify / Percolate Down Algorithm :
+
+* The process of rearraging the heap by comparing each parent with its children recursively is known as heapify
+
+Heap Property :
+* Max-Heap : Root node should be greater than all its left and right subtree nodes and it is recursively true 
+for all subtrees
+
+* Min-Heap : Root node should be lesser than all its left and right subtree nodes and it is recursively true
+for all subtrees
+
+* A leaf node always follows the min/max heap property i.e analogous as saying, that if there is only one element
+in the array then that array is already sorted
+
+Goal : To convert given binary tree to Min/Max Heap
+
+* Rearranging ith element recursively in heap tree by comparing parent element to left and right child and swap, according
+to Max/Min Heap
+
+* We will stop rearranging, if ith element is at leaf node or ith element i.e current element is greater than its left 
+and right child
+
+MaxHeapify( Arr, i ) :
+
+	L = 2 * i + 1
+	R = 2 * i + 2
+
+	if( L <= Arr.size() && Arr[L] > Arr[i] )
+		largest = L
+	else
+		largest = i
+
+	if( R <= Arr.size() && Arr[R] > Arr[largest] )
+		largest = R
+
+	if(largest != i) :
+		swap( Arr, i, largest )
+		MaxHeapify( Arr, i )
+
+Note : Time complexity and space complexity is O( log N )
+
+Buid Heap Algorithm :
+
+* We can heapify index 'i' only if all elements in both left and right subtrees are following heap property i.e
+left and right subtrees are already a heap
+
+Q) How to build heap ?
+-> Heapify all internal nodes in Bottom up order
+
+Build_MaxHeap( Arr ) :
+	for( i = ( floor( Arr.size() / 2 ) - 1 ) to 0 )
+		MaxHeapify( Arr, i )
+
+Note : Time complexity for this algorithm is O( N log N ) i.e Time complexity for all internal nodes + Time complexity of MaxHeapify Procedure
+For all internal nodes time complexity will be O( N / 2 ) i.e O ( N ) and Time complexity for MaxHeapify is O( log N ) but that is not the 
+case, it's time complexity is simply O( N )
+
+Heap Algorithms :
+
+* Extract Max : MaxHeap
+	-> Save maximum value from max heap
+	-> copy last node to root node
+	-> remove last node and decrease heapsize by 1
+	-> Heapify root node
+
+Extract Max in C implementation
+
+int ExtractMax( int** ppHeap, size_t* pHeapSize )
+{
+	if( *pHeapSize ) //If heapSize is 0 then we cannot extract max
+		return HEAP_UNDERFLOW;
+
+	int max = (*ppHeap)[0]; //Save maximum value from max heap
+	
+	(*ppHeap)[0] = (*ppHeap)[ *pHeapSize - 1 ]; //Copy last node to root node
+	
+	*pHeapSize = *pHeapSize - 1; //Decrease HeapSize by 1
+	*ppHeap = realloc( *ppHeap, *pHeapSize * sizeof(int)) //Remove last node
+
+	MaxHeapify( Heap, HeapSize, 0 ) //Max Heapify index '0'
+	return max;
+}
+
+Note : Time and Space complexity is O( log N ) as we are making one call to MaxHeapify Procedure
+
+* Increase Key : Max Heap
+On increasing a node value in a maxHeap, node may move up to maintain, maxHeap property
+	-> 1) Update the node value
+	-> 2) Moving up /Percolate up till it, follow maxHeap property
+		-> Parent > Current Node
+		-> Current Node becomes root of the tree
+
+int IncreaseKey( int* Heap, size_t HeapSize, int i, int key )
+{
+	if( key <= Heap[i] ) /* IncreaseKey Procedure increase the key value at ith index of Heap and therefore 
+				key itself should be greater than ith value of heap */
+		return INAPPROPRIATE_KEY; 
+
+	Heap[i] = key; //Step 1 : Updated the node value
+	int parent = floor( ( i - 1 ) / 2 );
+
+	while(Heap[i] > Heap[parent] && parent >= 0 ) //Step 2 : Move up untill parent is greater than current node through swapping
+	{	
+		swap( Heap, i, parent );
+		i = parent;
+		parent = floor( (parent - 1) / 2 );
+	}
+	return SUCCESS;
+}
+
+Note : Time complexity of this algorithm is O( log N ) and space complexity is O( 1 )
+
+* Decrease Key : Max Heap
+On decreasing a node value in a maxHeap, node may move down to maintain, MaxHeap Property
+	-> 1) update the node value
+	-> 2) MaxHeapify the current node i.e percolate down
+	
+int DecreaseKey( int* Heap, size_t HeapSize, int i, int key )
+{
+	if( key >= Heap[i] ) /* Key value should be less than value of ith element of Heap, as we are using Decrease key Procedure */
+		return INAPPROPRIATE_KEY;
+	
+	Heap[i] = key;
+	//Note : Here, we are decreasing the value of ith element and therefore it will move down in heap
+	MaxHeapify( Heap, HeapSize, i );
+	return SUCCESS;
+}
+
+Note : Time and Space complexity of this algorithm is O( log N )
+
+Insert Element
+In a complete binary tree, insert element at last level from left to right and percolate it up till it comes
+in its proper position in heap
+	-> 1) Insert node at the end of heap ( left to right order )
+	-> 2) Percolate it up till : //Same as Increase key
+		-> Parent > current Node
+		-> current Node is root node of the tree
+Note : Inserted element at the last will be our current element
+
+void InsertElement(int** pHeap, size_t* size, int key) {
+	//Increase HeapSize by 1
+	*size = *size + 1;
+	int HeapSize = *size;
+
+	//Allocating memory for new node< 
+	*pHeap = (int*)realloc(*pHeap, HeapSize * sizeof(int));
+	int* Heap = *pHeap;
+	Heap[HeapSize - 1] = 0; 
+	
+	/* Rearranging last inserted element to it's proper position i.e to percolating it up 
+	till it current Node < Parent or current Node becomes root node of the tree */
+	//IncreaseKey(Heap, HeapSize, HeapSize - 1, key);
+	Heap[HeapSize - 1] = key;
+	int i = HeapSize - 1;
+	int parent = floor((i - 1) / 2);
+	while( Heap[parent] < key && parent >= 0)
+	{
+		swap(Heap, i, parent);
+		i = parent;
+		parent = floor((parent - 1)/ 2);
+	}
+}
+
+Note : Time complexity for this algorithm is O( log N ) and space complexity is O( 1 )
+
+HeapSort : sorting using heap
+* Algorithm used for heap sort :- Extract Max/Min ( Max/Min Heapify )
+
+void HeapSort(int* Heap, size_t HeapSize)
+{
+	BuildHeap(Heap, HeapSize ); //This take time complexity, O( N )
+	size_t size = HeapSize;
+	//Below for loop take time complexity as O( N )
+	for(int i = HeapSize - 1; i >= 1; i--) //We going down to 1, as remaining one element in array after swapping, makes array sorted
+	{
+		swap(Heap[0], Heap[i]); //Swap last element always with root element
+		size = size - 1; /* Reducing heapSize by 1, to restrict heapify method to that given size 
+				   only so that will not able to access remaining part that is sorted */
+		MaxHeapify(Heap, size , 0); //This will take time complexity as O( log N )
+	}
+}
+
+Note : The Time complexity of HeapSort i.e ForLoop( O( N ) ) + MaxHeapify( O( log N ) ) -> O( N * log N )
+
+Heap Push and Heap Pop :
+
+* Heap Push is similar to inserting element into the heap whose time and space complexity is O( log N ) and O( 1 ) respectively
+* Heap Pop is similar to extract min/max from heap whose time and space complexity is O( log N ).

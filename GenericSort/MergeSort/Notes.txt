@@ -1,0 +1,33 @@
+
+Find all integers satisfying following equation :
+2 <= n <= 8    ->   [ 2, 8 ]  i.e 2, 3, 4, 5, 6, 7, 8  -> Closed Interval
+2 < n <= 8     ->   ( 2, 8 ]  i.e 3, 4, 5, 6, 7, 8     -> Semi open/ semi closed
+2 <= n < 8     ->   [ 2, 8 )  i.e 2, 3, 4, 5, 6, 7     -> Semi open/ semi closed
+2 < n  < 8     ->   ( 2, 8 )  i.e 3, 4, 5, 6, 7        -> Open Interval
+
+len( a, b ] = b - a;  
+len[ a, b ) = b - a;  
+len[ a, b ] = b - a + 1; 
+len( a, b ) = b - a - 1; 
+
+Merge Sort:
+void merge( int *pa, int p, int q, int r )
+{
+/* Pre Cond : C1 -> 0 <= p <= q < r < N
+	    : C2 -> pa[ p ... q ] is sorted
+	     len = q - p + 1;
+ 
+		 -> pa [ q+1 .... r ] is sorted
+	     len = r - ( q + 1 ) + 1;
+		 = r - q - 1 + 1;
+		 = r - q;
+
+  Post Cond : pa[ p ... r] sorted
+*/
+}
+
+Two functions are involved in this algorithm
+
+* The merge() function is used for merging two halves 
+* The Mergesort() function recursively calls itself to divide the array 
+till size becomes one

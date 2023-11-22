@@ -1,0 +1,723 @@
+structure template for information related to Binary search tree
+
+typedef struct bst_node* p_bst_node_t;
+typedef struct bst_node bst_node_t;
+
+//Template for binary search tree nodes
+struct bst_node{
+	data_t data;
+	bst_node_t *parent;
+	bst_node_t *left;
+	bst_node_t *right;
+}; 
+
+To create reference point of whole data structure ,we generally use to
+typedef node_t list_t, here, it is implementable and convenient
+design wise also , but if we try to do same with bst, 
+
+typedef bst_node_t bst_t; /* object of bst, is itself the whole bst data structure
+which is going to keep the reference of whole binary search tree */
+
+But then question arises here is that, which self referential pointer i.e left,
+right, parent should we use to keep the reference of root node in dummy node because neither
+it makes sense to keep reference of root node in left and right pointer nor it makes sense to keep
+reference in dummy node's parent pointer 
+
+Therefore, it is implementable but not convenient as design wise
+
+So better scheme is to create another information structure which would be
+convenient as design wise also
+
+struct bst{
+	bst_node_t* p_root_node;
+	size_t nr_elements;
+};
+
+so here, struct bst is not same as bst_node_t.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+for each node in Binary search tree
+1) Data belonging to all nodes in its left subtree <= data of parent node
+
+2) Data belonging to all nodes in its right subtree > data of parent node
+
+Point to be noted
+1) After insertion, new node becomes leaf node i.e newly added node must be leaf node
+
+2) Existing Node: which existing node and existing node's pointer to use i.e left or right
+
+Now, the question is how to find correct node/existing node and which existing
+node's pointer to use ?
+
+Algorithm : Insert the node
+
+status_t insert_bst(bst_t *p_bst, data_t new_data){
+	//Allocating memory for new node
+	p_bst_node_t new_node = get_bst_node(new_data);
+
+	//Case 1: Empty tree
+	if(p_bst->root_node == NULL){
+		root_node = get_bst_node(new_data);
+		++p_bst->nr_elements;
+		return SUCCESS;
+	}
+
+	//Case 2: Non-Empty tree
+	//Note : Every time we add/insert new node in bst , it becomes leaf node 
+	p_bst_node_t p_run = p_bst->root_node;
+	
+	while(TRUE)
+	{
+	
+		if(p_run->data <= new_data){
+		
+			if(p_run->left == NULL)
+			{
+				p_run->left = new_node;
+				new_node->parent = p_run;
+			}
+			else
+				p_run = p_run->left;
+
+		}
+		else
+		{
+			if(p_run->right == NULL)
+			{
+				p_run->right = new_node;
+				new_node->parent = p_run;
+			}
+			else
+				p_run = p_run->right;
+		}
+	}
+
+  
+
+     ++p_bst->nr_elements;
+	return SUCCESS;
+}
+
+To insert the data at correct node and it's pointer ,how much comparison need ?
+
+Comparsion need in binary search tree in best case and worst case : Height
+
+floor( log2( N ))  <= Height <= N
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+There are different way we can traverse through binary search tree
+* Different traversal work ,according to respective root node such that each node of tree is considered as root node and then traversal sequence
+applied by traveling and visiting node according to sequence
+
+1) Inorder Traversal ( left root right ) i.e root in the middle
+ 
+Algorithm :
+
+Travel( left-subtree );
+Visit( Node );
+Travel( right-subtree );
+
+Code : Recursive Approach
+
+void travel_inorder( bst_node_t *bst_node){
+	if( bst_node == NULL )
+		return;
+	travel_inorder( bst_node->left);
+	visit( bst_node );
+	travel_inorder( bst_node->right);
+}	
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2) Preorder Traversal ( root left right ) i.e root before left and right
+
+Algorithm :
+
+Visit( Node );
+Travel( left-subtree );
+Travel( right-subtree );
+
+Code : Recursive Approach
+
+void travel_preorder( bst_node_t *bst_node){
+	if( bst_node == NULL )
+		return;
+
+	visit( bst_node );
+	travel_preorder( bst_node->left);
+	travel_preorder( bst_node->right);
+}
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3) Postorder Tranversal ( left right root ) i.e root after left and right
+
+Algorithm :
+
+Travel( left-subtree );
+Travel( right-subtree );
+Visit( Node );
+
+Code : Recursive Approach
+
+void travel_postorder( bst_node_t *bst_node){
+	if( bst_node == NULL )
+		return;
+
+	
+	travel_postorder( bst_node->left);
+	travel_postorder( bst_node->right);
+	visit( bst_node );
+}
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Note : While tracing the stack and flow of function call sequence of above traversal functions
+remember, there are two return statement ,one is when bst_node is null and second , is at the end of the function
+
+void inorder(bst_node_t* p_node){
+	if(p_node == NULL)
+		return;
+	
+	inorder(p_node->left);
+	visit(p_node);
+	inorder(p_node->right);
+
+	return; //Returing to previous state from state that return same state during execution
+		  of inorder(p_node->right);
+}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Develop the Recursive version of the following routine
+bst_node_t * search_node_nrc(bst_t *p_bst, data_t search_data){
+	
+	p_bst_node_t p_node = NULL;
+	p_node = p_bst->root_node;
+
+	while(p_node != NULL){
+		
+		if(p_node->data == search_data){
+			break;
+		}
+		else if(search_data < p_node->data){
+			p_node = p_node->left;
+		}else{
+			p_node = p_node->right;
+		}
+	}
+	return (p_node);
+}
+
+//Recursive Approach
+bst_node_t* search_node_rc(bst_t *p_bst, data_t existing_data){
+	bst_node_t *p_node = search_data( p_bst->root_node, existing_data );
+	return ( pnode );
+}
+
+bst_node_t *search_data(bst_node_t* p_node, data_t existing_data){
+
+	if(p_node == NULL){
+		return NULL;
+	}
+
+	if( p_node->data == existing_data ){
+		return p_node;
+	}
+	else if( existing_data < p_node->data ){
+		return search_data(p_node->left, existing_data);
+	}
+	else{
+		return search_data(p_node->right, existing_data);
+	}
+
+}
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Non recursive traversal : 
+* Preorder, Post order and Inorder traversal are depth-first traversal
+
+Depth First Traversal :
+* Depth first Search is a recursive algorithm for searching all the vertices of a graph or tree data structure.
+
+* A tree is a special kind of graph with no cycles). The algorithm starts at a node of a graph and goes as far as 
+possible in a given path, then backtracks until it finds an unexplored path, and then explores the rest of it. 
+
+* It uses LIFO access mechanism i.e stack
+
+parent node is pushed onto the stack, in order to traverse through left subtree but after 
+traversing left subtree ,to traverse right subtree also ,we access topmost element of the 
+stack and at the same time we popped it from stack
+
+void inorder_nrc(bst_t* p_bst){
+
+	p_bst_node_t p_run = p_bst->root_node;
+	stack_t* p_stack = NULL;
+
+	create_stack(&p_stack);
+	puts("Inorder:\n[BEG]<->");
+
+	while(TRUE){
+		
+		while(p_run != NULL){
+			push_bstptr(p_stack, p_run);
+			p_run = p_run->left;
+		}
+
+		if(pop_bstptr(p_stack, &p_run) == STACK_EMPTY);
+			break;
+		
+		printf("%d ",p_run->data);
+		p_run = p_run->right;
+	}
+	printf("[END]\n");
+}
+
+void preorder_nrc(bst_t* p_bst){
+
+	p_bst_node_t p_run = p_bst->root_node;
+	stack_t* p_stack = NULL;
+
+	create_stack(&p_stack);
+	puts("Preorder:\n[BEG]<->");
+
+	while(TRUE){
+		
+		while(p_run != NULL){
+			push_bstptr(p_stack, p_run);
+			p_run = p_run->left;
+		}
+
+		if(pop_bstptr(p_stack, &p_run) == STACK_EMPTY);
+			break;
+		
+		printf("%d ",p_run->data);
+		p_run = p_run->right;
+	}
+	printf("[END]\n");
+}
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+In case of postorder (left right root) traversal challenge is to visit the node
+only if its left and right subtree are visited and that can be solved by maintaining state instead 
+some computation i.e Parent node is popped from stack only when we have visited left subtree and right subtree
+
+typedef enum {
+	WHITE, // When none of the subtree is visited
+	GREY,  // When only left subtree is visited
+	BLACK, // When left subtree and right subtree, both visited
+}color_t;
+
+typedef struct bstptr bstptr_t;
+
+struct bstptr{
+	color_t color;
+	bstptr* next;
+	bstptr* prev;
+	bst_node_t* bst_node;
+};
+
+void postorder_nrc(bst_t* p_bst){
+	bst_node_t* p_run = NULL;
+	stack_t *p_stack = NULL;
+	color_t color = WHITE;
+
+	create_bstptr_stack(&p_stack);
+	p_run = p_bst->root_node;
+	
+	printf("Postorder:\n[beg]<->");
+
+	while(TRUE)
+	{
+		/* Go to left most node untill NULL is encounter ,along with that
+		and set the color( GREY ) of each visited node */
+
+		while(p_run != NULL){
+			push_bstptr(p_stack, p_run);
+			set_bstptr_top_color(p_stack, GREY);
+			p_run = p_run->left;
+		}
+		
+		/* Getting the color of top most node present in stack along with checking,
+		the terminating condition */
+	  	if(get_bstptr_top_color(p_stack, &color) == STACK_EMPTY)
+			break;
+
+		/* if color is GREY that means we visited left subtree so now we need visit
+		right subtree by visiting and changing their color to BLACK */
+
+		if(color == GREY){
+			set_bstptr_top_color(p_stack, BLACK);
+			top_bstptr( p_stack, &p_run );
+			p_run = p_run->right;
+			continue;
+		}
+		else if(color == BLACK){
+			pop_bstptr(p_stack, &p_run);
+			printf("[%d]<->,p_run->data);
+			p_run = NULL;
+		}
+	}
+}
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Breadth First Search : 			
+* We would visit all the nodes at same depth or level, before visiting nodes at next level
+
+* It use FIFO access level mechanism i.e queue
+
+BFS Algorithm : Recursive Approach
+
+bfs_nrc( bst_t* p_bst){
+
+	create_queue_bstptr( &p_queue ); 
+	bst_node_t *p_node = p_bst->root_node;
+
+	while(is_queue_empty(p_queue) != QUEUE_EMPTY){
+		p_node = dequeue( p_queue );
+		
+		printf("%d ", p_node->data);
+	
+		enqueue( p_queue, p_node->left);
+		enqueue( p_queue, p_node->right);
+	}
+}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Inorder order successor i.e Finding the successor through inorder traversal
+
+Note : Following algorithm does not include data comparison instead it contains pointer 
+mainpulation
+
+It has two case :
+* Case 1 - if Right subtree of a given node is non-empty then successor of given
+node can be achieved by moving right of the given node and from that node traversing left 
+node till NULL encountered
+
+Minimum( given_node->right ) will be the SUCCESSOR i.e minimum of right subtree of a given
+node
+
+* Case 2 - if Right subtree of a given node is empty then successor of given node can
+be achieved by finding a node whose left subtree's maximum is the given node
+
+To do that, 
+Follow the parent link untill parent node's right is the same right node from where we
+went up i.e from given node we went up to its parent node untill, it itself is right node
+otherwise if it itself is the left node then it's parent node is successor of the given 
+node or at max, it has no successor
+
+The description of above explanation can be expressed as
+ 
+* p_node->parent->left == p_node ( p_node is left child of its parent )
+* p_node->parent->right == p_node ( p_node is right child of its parent )
+
+Note : Case 2 include, whether given node is left node or right node of its parent node
+
+// Auxillary Routine for inorder successor
+bst_node_t* inorder_successor_node(bst_node_t* p_node){
+	
+	bst_node_t* p_run = p_node;
+	
+	/* Case 1 : When right node of the given node i.e p_node is non_empty */
+	if(p_run->right != NULL){
+		p_run = p_run->right;
+
+		while(p_run->left != NULL){
+			p_run = p_run->left;
+		}
+		return p_run;
+	}
+
+	/* Case 2: When right node of the given node is empty */
+	bst_node_t* x = p_node;
+	bst_node_t* y = p_node->parent;
+
+	//Note :In case, if given node is root node then x->parent will NULL and 
+	below condition become false and return NULL
+
+	while(y != NULL && x == y->right ){
+		x = y;
+		y = x->parent;
+	}
+	return y;
+}
+
+//Interface Routine
+status_t inorder_successor( bst_t* p_bst, data_t existing_data ,data_t* p_successor ){
+
+	bst_node_t* p_existing_node = search_bst_nrc( p_bst, existing_data );
+
+	if(p_existing_node == NULL){
+		return BST_DATA_NOT_FOUND;
+	}
+	
+	p_existing_node = inorder_successor_node( p_existing_node );
+	if(p_existing_node != NULL){
+
+		*p_successor = p_existing_node->data;
+		return SUCCESS;
+		
+	}
+	return BST_NO_SUCCESSOR;	
+}
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Inorder Predecessor : 
+Note : Same algorithm as inorder successor, but accessed sibling are quite the opposite
+to inorder successor in inorder predecessor
+
+It has also two cases :
+
+* Case 1: when left subtree of the given node is non-empty
+Maximum( given_node->left );
+
+* Case 2: When left subtree of the given node is empty
+Following the parent node from given node untill parent node's child is left
+
+bst_node_t* inorder_predecessor_node( bst_node_t* p_node ){
+
+	/* Case 1: when given node's left is non-empty */
+
+	if(p_node->left != NULL){
+		p_node = p_node->left;
+		
+		while(p_node->right != NULL){
+			p_node = p_node->right;
+		}
+		return p_node;
+	}
+
+	/* Case 2: When given node's left is empty  */
+	bst_node_t* x = p_node;
+	bst_node_t* y = x->parent;
+
+	while( y != NULL && x == y->left){
+		x = y;
+		y = x->parent;
+	}
+	return y;
+
+}
+
+status_t inorder_predecessor( bst_t* p_bst, data_t existing_data, data_t *p_predecessor){
+	
+	bst_node_t* p_existing_node = search_bst_nrc(p_bst, existing_data);
+	
+	if(p_existing_node == NULL){
+		return BST_DATA_NOT_FOUND;
+	}
+	
+	p_existing_node = inorder_predecessor_node( p_existing_node );
+
+	if(p_existing_node != NULL){
+
+		*p_predecessor = p_existing_node->data;
+		return SUCCESS;
+	}
+	return BST_NO_PREDECESSOR;
+	
+}
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+TO remove any node from BST involves four following cases
+* Case 1: ( left link == NULL && right link == NULL )
+* Case 2: ( left link != NULL && right link == NULL )
+* Case 3: ( left link == NULL && right link != NULL )
+* Case 4: ( left link != NULL && right link != NULL )
+
+For any data structure D,
+Pre-condition of add and remove : All elements in D obey the rule of data structure
+
+Similary,
+Post-condition of add and remove : All elements in D, after insertion or deletion 
+should obey the rule of D i.e after operation element should be reconfigure according
+to the property of Data structure
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+status_t bst_remove_extended( struct bst* p_bst, data_t remove_data){
+	
+	bst_node_t* p_remove_node = NULL;
+	bst_node_t* z = NULL;
+	bst_node_t* y = NULL;
+	p_remove_node = search_node( p_bst, remove_data);
+	
+	if(p_remove_node == NULL){
+		return BST_DATA_NOT_FOUND;
+	}
+
+	z = p_remove_node;
+
+	/* Case 1: left link == NULL && right link != NULL */
+	if( z->left == NULL ){
+		
+		if( z->parent == NULL){    // Variant 3
+			p_bst->root_node = z->right;
+		}
+		else if( z == z->parent->left ){ // Variant 2
+			z->parent->left = z->right;
+		}
+		else{  // Variant 1
+			z->parent->right = z->right;
+		}
+
+	
+		if( z->right != NULL ){ // Set the parent link 
+			z->right->parent = z->parent;
+		}
+    	}
+	
+	/* Case 2 : left link != NULL && right link == NULL */
+	else if( z->right == NULL ){
+		
+		if( z->parent == NULL ){
+			p_bst->root_node = z->left;
+		}
+		else if( z == z->parent->left){
+			z->parent->left = z->left;
+		else{
+			z->parent->right = z->left;
+		}
+		
+		if( z->left != NULL){ //Setting up the parent link
+			z->left->parent = z->parent;
+		}
+	}
+	else{
+		
+		/* Case 3 : left link != NULL && right link != NULL */
+		y = z->right; 
+
+		/* What if z's right child is the successor of node to be deleted 
+		i.e z node */
+
+		//if z's right child is successor then its y->left == NULL
+		
+		
+		// Find the successor of the given node
+		while( y->left != NULL )	
+			y = y->left; // y is the inorder successor of z
+
+		/* It is obvious, that y is the left child of its parents therefore 
+		without any doubt, we are going to delegate the responsibilty of y's 
+		right subtree to y's parent to dettach the y node */
+		
+
+		/* Delegate responsibilty of y's right subtree( NULL or NOT NULL )
+		to y's parent 
+
+		Please Note :
+			1] y cannot be root( as its a child of z),
+			therefore, usual if( y->parent == NULL )
+			need not be checked 
+
+			2] y cannot be a right child of its parent because
+			right child cannot be a minimum in subtree, therefore,
+			if( y->parent->right == y ) need not be checked 
+
+			3] If y->right is NULL then it will simply make y's 
+			parent's left NULL ( which is desirable )
+			we do not dereference y->right unless we are sure
+			that it is non-empty
+		
+
+	/* if y is successor of z such that y is z->right then 
+	we need to skip below part */
+
+	if( y != z->right ){
+		// Deattaching y node and set up links 
+		y->parent->left = y->right; 
+		
+		if( y->right )
+			y->right->parent = y->parent;
+		
+		// Win Over z's right subtree by y node
+		y->right = z->right;
+		y->right->parent = y;
+
+	}
+
+		// Win Over z's Parent by y node
+		if( z->parent == NULL )
+			p_bst->root_node = y;
+		else if( z == z->parent->left )
+			z->parent->left = y;
+		else
+			z->parent->right = y;
+
+		y->parent = z->parent;
+		
+		//Win Over z's left subtree by y node
+		y->left = z->left;
+		y->left->parent = y;
+
+		free( z );
+		p_bst->nr_elements--;
+
+		return SUCCESS;
+}
+		
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+static void transplant( bst_t* p_bst, bst_node_t* u, bst_node_t* v){
+	
+	//Substitution of v node in place of u node
+	
+	if( u->parent == NULL )
+		p_bst->root_node = v;
+	else if( u == u->parent->left )
+		u->parent->left = v;
+	else 
+		u->parent->right = u;
+
+	if(v)
+	  v->parent = u->parent;
+}
+
+status_t bst_remove( bst_t* p_bst, data_t remove_data){
+	
+	bst_node_t* p_remove_node = search_bst_nrc( p_bst, remove_data );
+	
+	if( p_remove_node == NULL)
+		return BST_DATA_NOT_FOUND;
+
+	bst_node_t* z = p_remove_node;
+	bst_node_t* y = NULL;
+	
+	/* Case 1 : left link == NULL && right link != NULL */
+	if( z->left == NULL) {
+		transplant( p_bst, z, z->right);
+	}
+	else if( z->right == NULL){ // Case 2 : right link == NULL && left link != NULL
+		transplant( p_bst, z, z->left);
+	}
+	else{
+		// Case 3 : right link != NULL && left link != NULL
+		y = inorder_successor_node( z );
+	
+		if( y != z->right ){
+
+			//Deattaching y node ,whose left child is empty ( NULL ) and right child is non-empty;
+			y->parent->left = y->right;
+			y->right->parent = y->parent;
+
+			// Win over z's right subtree by y
+			y->right = z->right;
+			y->right->parent = y;
+		}
+		
+		//Win Over z's parent 
+		transplant( p_bst, z, y);
+
+		//Win Over z's left tree
+		y->left = z->left;
+		y->left->parent = y;
+
+	}
+	free(z);
+	z = NULL;
+
+	p_bst->nr_elements--;
+	return SUCCESS;
+}
+			
+		
+			
+		
+		
+
+
+		
+			 
+		
+		
+		
+		
+		
+		
+	
+

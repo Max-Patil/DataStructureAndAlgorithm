@@ -1,0 +1,193 @@
+* Array takes constant time to access any element 
+* To perform Insertion and deletion operation trigger large data movement 
+in array ,therefore takes O(n)
+
+* To solve above problem, we use linked list because insertion and deletion takes
+ O( 1 ) i.e constant time as we have to perform operation on linking only
+Insertion - linking previous node to new node and then new node to next node
+Deletion - linking previous node to next node only
+
+Q) Can for loop replaces the recursion ?
+A) Yes, but not in the context of maintaining the state as recursion has
+ability to maintain its state along with iteration but also achievable, when 
+used, for loop with stack data structure 
+
+-----------------------------------------------------------------------------------------------------------------------
+Basic of Linked list:
+
+* Self Referential structure : Struct of type T, stores a pointer to itself
+as one of its members then it is known as self referential structure
+
+For example:
+
+1) Structure template for doubly linked list
+struct T{
+     struct T* prev; /* Backward link */
+     void *data;
+     struct T* next; /* Forward link */
+};
+
+---------------------------------------------------------------------------------------------------------------------------------------
+Exercise : Access the instance of structure from one instance to another instance
+Refer the diagram ( Lecture 5 )
+
+typedef struct node node_t;
+typedef struct node* p_node_t;
+
+struct node{
+ 	struct node* prev;
+	void *data;
+	struct node* next;
+};
+
+struct node *pnode;
+pnode->next->prev = (p_node_t)malloc( sizeof(node_t) );
+pnode->next->next = (p_node_t)malloc( sizeof(node_t) );
+pnode->prev->next = (p_node_t)malloc( sizeof(node_t) );
+pnode->prev->prev = (p_node_t)malloc( sizeof(node_t) );
+
+//Way No.1 : Access the targeted node using arrow operator
+//Accessing Child node 1 of subtree 1
+pnode->prev->prev->prev == (*((*((*pnode).prev)).prev)).prev
+pnode->prev->prev->next == (*((*((*pnode).prev)).prev)).next
+pnode->prev->prev->data == (*((*((*pnode).prev)).prev)).data
+
+//Accessing Child node 2 of subtree 1
+pnode->prev->next->next == (*((*((*pnode).prev)).next)).next
+pnode->prev->next->prev == (*((*((*pnode).prev)).next)).prev
+pnode->prev->next->data == (*((*((*pnode).prev)).next)).data
+
+//Accessing Child node 1 of subtree 2
+pnode->next->prev->prev == (*((*((*pnode).next)).prev)).prev
+pnode->next->prev->next == (*((*((*pnode).next)).prev)).next
+pnode->next->prev->data == (*((*((*pnode).next)).prev)).data
+
+//Accessing Child node 2 of subtree 2
+pnode->next->next->next == (*(*((*pnode).next)).next)).next
+pnode->next->next->prev == (*(*((*pnode).next)).next)).prev
+pnode->next->next->data == (*(*((*pnode).next)).next)).data
+
+/* Freeing the memory */
+free(pnode->next->prev);
+free(pnode->next->next);
+free(pnode->prev->next);
+free(pnode->prev->prev);
+free(pnode->next);
+free(pnode->prev);
+free(pnode);
+
+Another way of freeing node recursively
+void free_node(node_t *pnode){
+	if(pnode == NULL)
+		return;
+	free_node(pnode->prev);
+	free_node(pnode->next);
+	free(pnode);
+}
+---------------------------------------------------------------------------------------------------------------------------------------
+To Remove node ,we have to consider the following situation in case of Doubly linked list
+
+1) Check whether node itself is Null
+if( node == NULL)
+	return;
+
+2) Check if node's prev link and next link is Null
+[ Linked list with one node ]
+if( node->prev == NULL && node->next == NULL ){
+	free(node);
+	node = NULL;
+	return;
+}
+
+3) Check if node's prev link is Null i.e next link is not Null
+[ Starting node Deletion ]
+if( node->prev == NULL ){
+	node->next->prev = NULL;
+	free(node);
+	return;
+}
+
+4) Check if node's next link is Null i.e prev link is not Null
+[ Last node Deletion ]
+if( node->next == NULL ){
+	node->prev->next = NULL;
+	free(node);
+	return;
+}
+
+5) Check if both node's links i.e prev link and next link is not Null
+[ Middle node Deletion ]
+if( node->next != NULL && node->prev != NULL )
+{
+	node->prev->next = node->next;
+	node->next->prev = node->prev;
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+To Add/Insert node, we have to consider following scenarios ,when dummy node is present
+
+INSERTION AT NON-BOUNDARY CONDITION:
+
+* Insert After :
+//First form the link of new_node 
+new_node->next = existing_node->next;
+new_node->prev = existing_node
+existing_node->next->prev = new_node;
+existing_node->next = new_node
+
+* Insert Before:
+//First form the links of new_node
+new_node->next = existing_node;
+new_node->prev = existing_node->prev;
+existing_node->prev->next = new_node;
+existing_node->prev = new_node;
+
+INSERTION AT BOUNDARY CONDITION :
+* Insert Begin :
+//First form the links of new_node
+new_node->next = p_head_node->next;
+new_node->prev = p_head_node;
+p_head_node->next->prev = new_node;
+p_head_node->next = new_node;
+
+* Insert End :
+//First form the links of new_node
+new_node->next = p_head_node;
+new_node->prev = p_head_node->prev;
+p_head_node->prev->next = new_node;
+p_head_node->prev = new_node;
+
+Note : All links formation in case of non-boundary condition and boundary condition
+is same 
+
+Therefore ,we use generic delete function to replace every repeated statement use
+in insertion 
+
+p_node_t new_node;
+
+1) Insert After :
+Generic_Insert(existing_node, new_node, existing_node->next);
+
+2) Insert Before :
+Generic_Insert(existing_node->prev, new_node, existing_node);
+
+3) Insert Begin :
+Generic_Insert(p_list, new_node, p_list->next);
+
+4) Insert End :
+Generic_Insert(p_list->prev, new_node, p_list);
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Why should we use dummy node approach ?
+First of all we, we can access last node in constant time in case of singly and doubly 
+linked list 
+
+Second, it simplies the code by eliminating the special cases which is adding
+node to empty list, if front node is null then allocate memory for it, this 
+case only exits because front node is actual node containing data and also reference
+to linked list
+
+whereas ,in case of dummy node, is just reference, there you do not check whether
+front node is empty or not, you just have to link the new_node to dummy node, even
+if new_node is the first and last node i.e only single node in linked list
+
+Note: Analyse the dummy node approach and typical approach
+

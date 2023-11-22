@@ -1,0 +1,68 @@
+STACK and QUEUE
+
+# Mechansim : established process / method ( a way to do something )
+
+* They are access level Mechanisms, not storage level mechanism such as array
+and linked list
+
+* Rather stack and queue use storage level mechanism to their's access level 
+mechanism
+
+Access level Mechansim 
+1) Stack : Last in First Out ( LIFO )
+Last element to be pushed, is the first element to popped 
+Last inserted data element, is the newest element to access
+
+2) Queue : First in First Out ( FIFO )
+First element to be pushed, is the first element to be popped
+First inserted element, is the oldest element to access
+
+Inspect/view Operation : get_begin and get_end
+Note : Return the newest element / oldest element
+
+Inspect + additional operation : pop_begin and pop_end
+Note : Return the element along with additional operation
+
+Point to noted : Separated storage level interface from access level interface
+
+Classic Stack Operations
+void create_stack( stack_t **pp_stack);
+status_t push(stack_t *p_stack , data_t data);
+status_t pop( stack_t *p_stack, data_t *p_data); // Inspection + pop routine
+status_t top( stack_t *p_stack, data_t *p_data); // Inspection Routine
+status_t is_stack_empty( stack_t *p_stack );
+status_t destroy_stack(stack_t **pp_stack);
+
+Classic Queue Operations
+void create_queue( queue_t **pp_queue);
+status_t insert( queue_t * p_queue, data_t new_data);
+status_t peek( queue_t *p_queue, data_t * p_data);
+status_t remove( queue_t *p_queue, data_t *p_data);
+status_t is_queue_empty( queue_t *p_queue );
+status_t destroy_queue( queue_t **pp_queue );
+
+Classic Double ended queue Operations
+void create_dequeue(dequeue_t**);
+status_t insert_front(dequeue_t*, data_t);
+status_t insert_rear(dequeue_t*, data_t);
+status_t remove_front(dequeue_t*, data_t*);
+status_t remove_rear(dequeue_t*, data_t*);
+status_t peek_front(dequeue_t*, data_t*);
+status_t peek_rear(dequeue_t*, data_t*);
+status_t is_dequeue_empty(dequeue_t*);
+status_t destroy_dequeue(dequeue_t**);
+
+typedef list_t stack_t;
+typedef list_t queue_t;
+----------------------------------------------------------------------------------------------------------------------------
+Introduction to non-linear data structure:
+
+Linear Search algorithm take more time to search data in linear organization i.e array and linked list 
+where we have to do 'N' comparison corresponding to 'N' elements due to linear nature
+provided with no sorting order so to make that searching sooner, we use non-linear nature as a solution 
+
+In case sorted data, we can use binary search algorithm, which have time complexity of O(log2(n))
+
+Note: Binary search is an algorithm whereas binary search tree is data structure but searching in 
+binary search tree is same as binary search algorithm therefore both searching have time complexity of O(log2(n))
+

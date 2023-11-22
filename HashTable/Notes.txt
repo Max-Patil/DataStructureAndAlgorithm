@@ -1,0 +1,288 @@
+Hash Queue is also known as HashTable
+
+Collection of element : Linear structure ( Array or Linked List )
+
+* Linear search algorithm to find vertex in graph, would be expensive, it is
+because it's time complexity is O( N ) 
+
+* But is there is any way to find vertex in less than O( N ), as search operation
+is used frequent in graph management
+
+* In Search, Max number of comparison  : N
+where N is the number of elements in the collection for an operation as fundamental
+as search, the time complexity that is directly proportional to N, is inefficient
+
+* If the collection is sorted then we will use the binary search, whose time complexity
+is log2( N ) and therefore Minimum time complexity for sorting to enable binary search 
+is N * log2( N ) + log2( N ) = ( N + 1 ) log2 ( N ) which is still expensive as compared
+to linear search 
+
+Note : N * log2( N ) > N, for all N > 1 
+for example : Suppose N is 1000 that is close to 1024
+1000 * log2(1000) > 1000 ==> 9900 > 1000 
+
+* Another way to make search algorithm fast is by using non-linear structure
+
+* Collection of element in which search operation is carried out : Search Space
+	-> Search Space Partition
+
+Recall : Parition of a 'A' set is a set of subset, { A1, A2, A3 }, in which union
+of all subset is itself set 'A' and intersection of any two pair of subset is Empty( phi )
+ 
+SEARCH SPACE PARTITION
+* Suppose parition of search space is equivalent and number of partition is represented by
+'K' i.e Number of mutually disjoint subset of set 'A', | P( A ) | = K and therefore
+size of each partition is floor( N / K ), where N is total size of space i.e paritioning space of 
+size N into K parts
+
+* Search element value should dictate / localize the area in search space where it may be found else it will declare 
+'not found' globally. In other words, Search element value will be searched based on it's local area and if
+it is found in local then its is present else it is not present globally
+
+Now, Actual Question arise, is that how to partition search space ?
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Set and its Theory
+
+* Set : Unordered collection of elements without repetition i.e { x, y } == { y, x }
+
+* Tuple : Ordered collection of element with possible repetition i.e ordered pair of elements 
+i.e ( x, y ) != ( y, x ) unless x == y
+
+* Cartesian product of two sets : Every element in set 'A' must be pair with every element in 
+set 'B' such pairing basically forms collection of tuple
+
+A = { a1, a2, a3, ...., an }
+B = { b1, b2, b3, ...., bm }
+
+A * B = { (a1, b1), (a1, b2), (a1, b3), ..., (a1, bm), 
+	  (a2, b1), (a2, b2), (a2, b3), ..., (a2, bm), 
+			 .
+			 .
+	  (an, b1), (an, b2), (an, b3), ..., (an, bm) }
+
+Note : Forming relationship between set A and set B involves forming an relation between their
+elements i.e R : A -> B is a subset of Cartesian Product A * B
+
+Set A = { 1, 2, 3, 4, 5 };
+
+Cartesian Product of A * A = { 
+			       (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), 
+			       (2, 1), (2, 2), (2, 3), (2, 4), (2, 5),
+			       (3, 1), (3, 2), (3, 3), (3, 4), (3, 5),
+			       (4, 1), (4, 2), (4, 3), (4, 4), (4, 5),
+			       (5, 1), (5, 2), (5, 3), (5, 4), (5, 5) 
+			     }
+R1 : A -> A is a subset of A * A
+R1 = { (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), 
+       (1, 3), (4, 3), (1, 2) }
+
+R2 : A -> A is a subset of A * A
+R2 = { (1, 2), (2, 5), (5, 1), (5, 2),( 1, 5), (2, 1) }
+
+R3 : A -> A is a subset of A * A
+R3 = { (1, 2), (5, 1), (1, 5), (5, 5), (2, 3), (3, 2),
+       (2, 2), (1, 3) }
+
+R4: A -> A is a subset of A * A
+R4 = { (1, 4), (2, 3), (2, 4), (3, 1), (3, 4), (4, 1) }
+
+R5 : A -> A is a subset of A * A
+R5 = { (4, 2), (4, 5), (5, 3), (5, 4) }
+
+Let A be a non-empty set and let R( A ) be a relation on A
+
+1) if for all x belongs to A, (x, x) belongs to R( A ) then R( A ) is called
+Reflexive relation
+
+R : A -> A = { (1, 1), (2, 2), (3, 3), (4, 4), (5, 5) };
+Note : Above subset of cartesian product A * A is reflexive relation
+
+2) if for all (x, y) belongs to R( A ) and (y, x) belongs to R( A ), then
+R( A ) is called as a symmetric relation
+
+R : A -> A = { 
+	       (1, 2), (2, 1), (1, 3), (3, 1), (1, 4), (4, 1), (1, 5), (5, 1), 
+	       (2, 3), (3, 2), (2, 4), (4, 2), (2, 5), (5, 2),
+	       (3, 4), (4, 3), (3, 5), (5, 3),
+	       (4, 5), (5, 4)
+	     }
+Note : Symmetry is around diagonal of set A which is set of reflexive element so
+symmetric relation is basically, all relation minus reflexive relations
+
+3) if (x, y) belongs to R( A ) and ( y, z ) belongs to R( A ) then ( x, z ) belongs to R( A ) and
+therefore R( A ) is transitive relation
+
+R : A -> A = {
+		(2, 1),   (1, 2), (2, 2), (1, 3), (1, 4), (1, 5), (1, 1),
+		(2, 3),   (3, 1), (3, 2), (3, 3), (3, 4), (3, 5),
+		(2, 4),   (4, 1), (4, 2), (4 ,3), (4, 4), (4, 5),
+		(2, 5),   (5, 1), (5, 2), (5, 3), (5, 4), (5, 5),
+	     }
+Observation : ( 2, 3 ) and ( 3, 2 ) becomes ( 2, 2 )
+              ( 3, 2 ) and ( 2, 3 ) becomes ( 3, 3 )
+
+Example of transitivity :
+1) Professor ask his student, to give him an example of transitivity, then student says, 
+"I love you and you love your daugther and therefore I love your daughter"
+
+2) It similar to choosing dimension of 2d matrix for multiplying two matrices
+in which number of column of 1st matrix should be equal to number of rows in 2nd matrix
+
+Note : if R( A ) is reflexive, symmetrix and transitive, then R( A ) i.e relation from A
+to A is called as an equivalence relation
+
+* Equivalence relation on set A, Partitions set A
+
+Let A be a set and R( A ) be the relation from A to A such that there is some condition imposed (Predicate)
+on tuple( x, y ) of cartesian product of A * A
+
+Condition( (x, y) ) => x + y < 10
+Condition( (x, y) ) => x % y = 0
+Condition( (x, y) ) => x % k = y % k ,for some constant k
+		    => x = y (mod k), x is congruence to y if ( x % k == y % k )
+
+R( A ) = {(x, y) belongs to (A * A) | Condition((x, y)) == TRUE }
+* Relation from A to A will be set of (x, y), where some condition is satisfied by (x, y) in the
+domain ( A * A )
+
+* R( A ) is collection of tuples which satifies some condition and along with that, also reflexive
+symmetric and transitive properties, then only, set A can be partitioned
+
+Note : if the condition on set A, induces the equivalence relation then partition on such set can also be induced
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q) what is Hashing ?
+A) It is a technique in which we used to map/transform data of arbitary size to fixed size
+value ( key ). In other words, hashing is used to convert the data into key 
+
+Q) How to know which element goes to what slot ?
+A) Slot is depend on the key and key is generated by hash function i.e hash function is used for
+mapping element to slot
+
+* Hash function is mathematical function which takes input x as arbitary data and produces output y as key
+
+* Hash Table is used as lookup Table in which, we can search our arbitary using key generated by hash function
+Note : In hash Table, array index is used as key value i.e hash value
+
+* A good hash algorithm should be complex enough such that it does not produce the same hash 
+value from two different inputs. If it does, this is known as a hash collision. A hash algorithm 
+can only be considered good and acceptable if it can offer a very low chance/probability of collision.
+
+* There are different technique for collision resolution
+1) Chaining ( Open Hashing )
+
+Note : In hashTable, chaining is done to handle the collision and for chaining, we use linked list to store the
+arbitary data with same key and Search in linked list will be linear and Search in array will be binary but insertion and deletion 
+cost is expensive
+
+2) Open Addressing ( Closed Hashing )
+	-> Linear Probing
+	-> Quadratic Probing
+	-> Double Hashing
+
+* In case of closed Hashing to handle collision, we can also make minor modifications to hash function input value and recompute hash value.
+In case, if new slot too is occupied then keep recomputing unless we find a free slot
+
+Note : In worst case may include searching all the ( N - 1 ) slots before reaching the last
+
+Uses of Hash Table
+1) When goal is to implement quick searching on key
+2) we can store( key, value ) pair or just key with value being anything ,we want
+
+Example : Dictionary ( word -> key -> meaning / Synonyms of word )
+
+Real Life Example of Hashing 
+* Suppose, There is hotel( HashMap ) and we want room in that hotel so we ask hotel manager ( hash function ) who
+provide us a key to some particular room( Slot in hashMap ) 
+Note : Hotel Manager who is our hash function is key factor( influence that contributes to a result )
+
+Need for HashMap
+* Most Common operations performed in data structure
+	-> Insertion
+	-> Searching
+	-> Deletion
+
+Note : Choice of data structure depends on most frequent operations to be performed
+
+Q) What happens if search is most frequent operations ?
+Data structure 		 Time Complexity
+* Unsorted Array    -      O( N )   Linear Search
+* Sorted Array	    -      O( log N )  Binary Search
+* Linked List	    -      O( N )   Linear Search
+* Binary Tree	    -      O( N )   Skewed Tree
+* Balance BST       -      O( log N )  Height of tree
+* Priority Queue    -      O( N )  Linear Search
+( Min/Max Heap )
+
+* Using HashMap allows searching a key possible in just O( 1 ) and therefore use Hashing
+when search based on key is frequent operation
+
+Chaining in HashMap
+* when hash value ( Key ) of HashMap is same, then collision occur and these collisions
+are handle using chaining using linked list which has following time complexity for different operations, 
+when distribution is not uniform
+
+1) Insertion  ->    O( 1 )  -> Insertion at head
+2) Searching  ->    O( N )  -> Linear search on collision
+3) Deletion   ->    O( N )  -> Search in collision list
+
+* If we uniformly distribute elements over hash map then the complexity on average will decrease
+Suppose, Number of elements -> N
+	 Number of slots    -> M
+
+* A uniform distribution/ Partition has only( N / M ) elements per slots and therefore Time complexity for search will become O( 1 + N / M )
+i.e O( 1 ) for searching in HashMap and O( N / M ) for searching in adjacent linked list
+
+* ( N / M ) is a Load Factor i.e number of eleents per slot
+
+Note : A lot of memory is wasted as each pointer consumes extra space, we have table as array of pointers
+
+Open Addressing( Closed Hashing ) in HashMap
+
+* In Closed Hashing, element in map <= MapSize, because are stored in HashTable/ HashMap, not in Linked List 
+* Load Factor : 
+	A = N / M, where N is number of elements and M is number of slots
+	0 <= A <= 1, Number of element 'N' should always less than or equal to its denominator i.e number of slots 'M'
+
+Collision Resolution in Closed Hashing:
+	* In case of collision, make minor modification to hash function 
+	input value and recalculate the output value( hash value )
+
+Aim : If there are M number of slots in the table, then on recomputation during collision, we must examine all M number of slots
+      unless we find a free slot 
+
+Note : Time complexity in worst case where we examine all N slots for different operations
+       -> Insertion  O( N )
+       -> Searching  O( N )
+       -> Deletion   O( N )
+
+Handling Deletion in Closed Hashing :
+
+* Use markers/particular value( -1 ) to handle deletion for slot that is empty so that we can able to continue
+our probing till we find our desirable element for deletion
+
+Note : Number of Keys for hashTable has to be known in order to increase the size of HashTable through dynamic 
+memory allocation. In some systems, when load factor becomes 75 percent( 0 <= 0.75 <= 1), then size of hashTable increased to double
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Open Hashing ( Chaining ) :
+
+* Hash Table/ Hash Map is a collection of bucket(keys) and bucket is a collection of arbitary data 
+Note : Every key in Hash Map, represents a bucket i.e linked list
+
+* In our Hash Table, there are M is total number of buckets( size of hash Table(bucket size) ) and N is total number of elements
+
+for all num belongs C, num % k will be our bucket number (key)
+Note : C is collection of integer
+
+C = { 1, 8, 13, 6, 16, 70, 18, 25, 27, 17, 19, 31, 50, 32 }
+
+Bucket Size = 4
+
+Bucket Number
+0 	1	2	3
+8	1	6	27
+16	13	70	19
+32	25	18	31
+	17	50
+
+Note : if bucket Size (k) is prime number then there is high probability of equal distribution
